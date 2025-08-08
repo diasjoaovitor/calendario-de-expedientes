@@ -1,8 +1,16 @@
-import dotenv from 'dotenv'
+import path from 'node:path'
 
-import { sum } from '@/utils'
+import express from 'express'
 
-dotenv.config()
+import router from './routes'
 
-console.log(sum(1, 2))
-console.log(process.env.MY_SECRET_KEY)
+const app = express()
+
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, '.'))
+app.use(express.static(path.join(__dirname, '..', 'public')))
+app.use(router)
+
+app.listen(3000, () => {
+  console.log('Server is running on: http://localhost:3000')
+})
