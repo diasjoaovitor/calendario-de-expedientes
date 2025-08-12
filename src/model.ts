@@ -2,6 +2,7 @@ import {
   formatTime,
   getDayOfWeek,
   getNumberOfDaysInTheMonth,
+  getNumberOfSundaysInTheMonth,
   getNumberOfWeeksInTheMonth,
   months,
   sum
@@ -31,6 +32,8 @@ export const getYearCalendar = (year: number) => {
   const data: {
     name: string
     hours: string
+    normalHours: string
+    overtimeHours: string
     weeks: {
       days: ({
         date: number
@@ -42,14 +45,23 @@ export const getYearCalendar = (year: number) => {
 
   months.forEach((month, monthIndex) => {
     const minutesPerDay = getMinutesPerDayInTheMonth(year, monthIndex)
+    const sundaysInTheMonth = getNumberOfSundaysInTheMonth(year, monthIndex)
+
+    const daysInMonth = getNumberOfDaysInTheMonth(year, monthIndex)
+    const workedDays = daysInMonth - sundaysInTheMonth
+
+    const workedMinutes = sum(minutesPerDay)
+    const normalMinutes = workedDays * (7 * 60 + 20)
+    const overtimeMinutes = workedMinutes - normalMinutes
 
     data.push({
       name: month,
-      hours: formatTime(sum(minutesPerDay)),
+      hours: formatTime(workedMinutes),
+      normalHours: formatTime(normalMinutes),
+      overtimeHours: formatTime(overtimeMinutes),
       weeks: []
     })
 
-    const daysInMonth = getNumberOfDaysInTheMonth(year, monthIndex)
     const weeks = getNumberOfWeeksInTheMonth(year, monthIndex)
 
     let date = 1

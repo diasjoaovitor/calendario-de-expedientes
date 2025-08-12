@@ -34,6 +34,18 @@ export const getNumberOfWeeksInTheMonth = (year: number, month: number) => {
   return numberOfWeeks
 }
 
+export const getNumberOfSundaysInTheMonth = (year: number, month: number) => {
+  const daysInMonth = getNumberOfDaysInTheMonth(year, month)
+  let numberOfSundays = 0
+
+  for (let i = 0; i < daysInMonth; i++) {
+    const day = getDayOfWeek(year, month, i + 1)
+    if (day === 0) numberOfSundays++
+  }
+
+  return numberOfSundays
+}
+
 export const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60

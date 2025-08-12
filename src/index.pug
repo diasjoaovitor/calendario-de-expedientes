@@ -33,5 +33,18 @@ html(lang="pt-br")
                   td= week.hours
             tfoot
               tr
-                td(colspan=8) Total de horas no mês: #{month.hours}
+                td(colspan=8)
+                  div
+                    span Carga horária total:
+                    span= month.hours
+              tr
+                td(colspan=8)
+                  div
+                    span Jornada padrão:
+                    span= month.normalHours
+              tr
+                td(colspan=8)
+                  div
+                    span Excedente de horas:
+                    span= month.overtimeHours
 
