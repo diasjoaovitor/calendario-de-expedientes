@@ -3,9 +3,9 @@ extends ./components/layout.pug
 block content
   - const columns = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'Total']
 
-  link(rel="stylesheet", href="/styles/calendar.css")
+  link(rel='stylesheet', href='/styles/calendar.css')
 
-  h1 Calendário de Expedientes de #{year}
+  h1 Calendário de Expedientes de #{ year }
 
   main
     each month in calendar
@@ -22,7 +22,7 @@ block content
                 each day in week.days
                   if day
                     td
-                      div(class="day")
+                      .day
                         strong= day.date
                         span= day.hours
                   else

@@ -1,13 +1,17 @@
 extends ./components/layout.pug
 
 block content
-  - const columns = ['Nº', 'Nome', 'TJ', 'IE', 'IA', 'FA', 'FE', 'TA', 'TE']
+  - const columns = ['Nº', 'Nome', 'TJ', 'IE', 'IA', 'FA', 'FE', 'TA', 'TE', 'FC']
+  - const selectedPosition = position  || ''
+  - const selectedSituation = situation || ''
+  - const selectedStartOfWork = startOfWork || ''
+  - const selectedEndOfWork = endOfWork || ''
 
-  link(rel="stylesheet", href="/styles/employees-schedule.css")
+  link(rel='stylesheet', href='/styles/employees-schedule.css')
 
   h1 Agenda de Funcionários
 
-  div(class="legend")
+  .legend
     p
     strong Legenda:
 
@@ -20,8 +24,8 @@ block content
             strong JP:
             span Jornada Padrão
           li
-            strong HE:
-            span Com horas extras
+            strong JE:
+            span Jornada com horas extras
           li
             strong JS:
             span Jornada do sábado
@@ -38,11 +42,63 @@ block content
         strong FE:
         span Fim do Expediente
       li
+
         strong TA:
         span Total de Horas de Almoço
       li
-        strong TD:
+        strong TE:
+
         span Total de Horas de Expediente
+      li
+        strong FC:
+        span Função
+
+  .search
+    form(action='/employees-schedule', method='get')
+      p
+        label(for='name') Nome
+        input#name(type='text', name='name', value=name)
+      p
+        label(for='position') Cargo
+        select#position(name='position')
+          option(value='', selected=selectedPosition === '') Selecione
+          each position in positionOptions
+            option(value=position, selected=position === selectedPosition)= position
+      p
+        label(for='situation') Situação
+        select#situation(name='situation')
+          option(value='', selected=selectedSituation === '') Selecione
+          each situation in situationOptions
+            option(value=situation, selected=situation === selectedSituation)= situation
+      p
+        label(for='startOfWork') Início do Expediente
+        select#startOfWork(name='startOfWork')
+          option(value='', selected=selectedStartOfWork === '') Selecione
+          each time in startOfWorkOptions
+            option(value=time, selected=time === selectedStartOfWork)= time
+      p
+        label(for='endOfWork') Fim do Expediente
+        select#endOfWork(name='endOfWork')
+          option(value='', selected=selectedEndOfWork === '') Selecione
+          each time in endOfWorkOptions
+            option(value=time, selected=time === selectedEndOfWork)= time
+
+      div.checkboxes
+        p
+          label(for='low') JP
+          input#low(type='checkbox', name='low', checked=low || low === undefined && !full && !sunday)
+        p
+          label(for='full') JE
+          input#full(type='checkbox', name='full', checked=full)
+        p
+          label(for='sunday') JS
+          input#sunday(type='checkbox', name='sunday', checked=sunday)
+        p
+          label(for='showInactive') Mostrar Inativos
+          input#showInactive(type='checkbox', name='showInactive', checked=showInactive || situation === "AFASTADO")
+      p
+        button(type='submit') Buscar
+        button(type='reset', onclick='window.location.href="/employees-schedule"') Limpar
 
   main
     table
@@ -62,9 +118,10 @@ block content
             td= employee.workMinutes.low.hoursOfDay[3]
             td= employee.workMinutes.low.totalHoursOfLunch
             td= employee.workMinutes.low.totalHoursOfDay
+            td(rowspan=3, title=employee.position)= employee.position.split(' ').map((word, index) => { if (index === 0 && employee.position.split(' ').length > 1) return word.slice(0,2); if (index === employee.position.split(' ').length - 1) return word.slice(0, 4); return ''}).join(' ')
 
           tr
-            td HE
+            td JE
             td= employee.workMinutes.full.hoursOfDay[0]
             td= employee.workMinutes.full.hoursOfDay[1]
             td= employee.workMinutes.full.hoursOfDay[2]
@@ -80,3 +137,4 @@ block content
             td= employee.workMinutes.sunday.hoursOfDay[3]
             td= employee.workMinutes.sunday.totalHoursOfLunch
             td= employee.workMinutes.sunday.totalHoursOfDay
+

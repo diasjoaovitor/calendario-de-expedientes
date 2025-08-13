@@ -1,17 +1,21 @@
 import {
+  formatHoursAndMinutesToMinutes,
   formatToHoursAndMinutes,
   formatToMinutesAndSeconds,
   readFile,
+  removeSpecialCharacters,
   sum
 } from '@/utils'
 
-type TSituation =
+export type TSituation =
   | 'REGISTRADO'
   | 'EXPERIÊNCIA'
   | 'DESLIGADO'
   | 'AFASTADO'
   | 'FÉRIAS'
   | 'FOLGA'
+
+export type TWorkScheduleKey = 'full' | 'low' | 'sunday'
 
 type TWorkSchedule = {
   minutes: number[]
@@ -49,6 +53,24 @@ type TEmployeeSchedule = {
   situation: TSituation
   position: string
 }
+
+const sortEmployees = (employees: TEmployeeSchedule[], key: TWorkScheduleKey) =>
+  employees
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .sort((a, b) => a.position.localeCompare(b.position))
+    .sort((a, b) => {
+      if (
+        a.workMinutes[key].hoursOfDay[0] === '-' ||
+        b.workMinutes[key].hoursOfDay[0] === '-'
+      ) {
+        return -Infinity
+      }
+
+      return (
+        formatHoursAndMinutesToMinutes(a.workMinutes[key].hoursOfDay[0]) -
+        formatHoursAndMinutesToMinutes(b.workMinutes[key].hoursOfDay[0])
+      )
+    })
 
 const getWorkMinutes = (workSchedule: TWorkSchedule): TFullWorkSchedule => {
   const { breakMinutes, minutes } = workSchedule
@@ -97,85 +119,177 @@ type TScheduleFilters = {
   situation?: TSituation
   startOfWork?: string
   endOfWork?: string
+  low?: boolean
+  full?: boolean
+  sunday?: boolean
+  showInactive?: boolean
 }
 
 const getFilteredEmployees = (
   employees: TEmployeeSchedule[],
   filters: TScheduleFilters
 ) => {
-  const { name, position, situation, startOfWork, endOfWork } = filters
+  const validFilters = Object.entries(filters).filter(([, value]) => value)
+  if (validFilters.length === 0) {
+    return employees.filter((employee) => employee.situation !== 'AFASTADO')
+  }
+  const workScheduleKeys: TWorkScheduleKey[] = []
+
+  if (filters.low) workScheduleKeys.push('low')
+  if (filters.full) workScheduleKeys.push('full')
+  if (filters.sunday) workScheduleKeys.push('sunday')
 
   const filteredEmployees = employees.filter((employee) => {
-    let isTrue = false
+    const isValid: boolean[] = []
 
-    if (
-      name &&
-      employee.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())
-    ) {
-      isTrue = true
+    validFilters.forEach(([key, value]) => {
+      if (key === 'name') {
+        isValid.push(
+          !!removeSpecialCharacters(employee.name.toLocaleLowerCase()).includes(
+            removeSpecialCharacters((value as string).toLocaleLowerCase())
+          )
+        )
+      }
+      if (key === 'position') {
+        isValid.push(employee.position === value)
+      }
+      if (key === 'situation') {
+        isValid.push(employee.situation === value)
+      }
+      if (key === 'startOfWork') {
+        workScheduleKeys.forEach((key) => {
+          isValid.push(employee.workMinutes[key].hoursOfDay[0] === value)
+        })
+      }
+      if (key === 'endOfWork') {
+        workScheduleKeys.forEach((key) => {
+          isValid.push(
+            employee.workMinutes[key].hoursOfDay[
+              employee.workMinutes[key].hoursOfDay.length - 1
+            ] === value
+          )
+        })
+      }
+    })
+
+    if (!filters.showInactive && employee.situation === 'AFASTADO') {
+      isValid.push(false)
     }
 
-    if (
-      position &&
-      employee.position
-        .toLocaleLowerCase()
-        .includes(position.toLocaleLowerCase())
-    ) {
-      isTrue = true
-    }
-
-    if (situation && employee.situation === situation) {
-      isTrue = true
-    }
-
-    if (
-      startOfWork &&
-      employee.workMinutes.full.hoursOfDay[0] === startOfWork
-    ) {
-      isTrue = true
-    }
-
-    if (endOfWork && employee.workMinutes.full.hoursOfDay[3] === endOfWork) {
-      isTrue = true
-    }
-
-    return isTrue
+    return isValid.every((isValid) => isValid)
   })
 
   return filteredEmployees
 }
 
-export const getEmployeesSchedule = async (filters?: TScheduleFilters) => {
+export const getEmployeesSchedule = async (filters: TScheduleFilters) => {
   const employees = (await readFile(
     'data/employees.json'
   )) as TEmployeeScheduleData[]
 
-  const data: TEmployeeSchedule[] = employees
-    .map((employee) => {
-      const { workMinutes } = employee
-      const low = getWorkMinutes(workMinutes.low)
-      const full = getWorkMinutes(workMinutes.full)
-      const sunday = getWorkMinutes(workMinutes.sunday)
+  const data: TEmployeeSchedule[] = employees.map((employee) => {
+    const { workMinutes } = employee
+    const low = getWorkMinutes(workMinutes.low)
+    const full = getWorkMinutes(workMinutes.full)
+    const sunday = getWorkMinutes(workMinutes.sunday)
 
-      return {
-        id: employee.id,
-        name: employee.name,
-        workMinutes: { low, full, sunday },
-        situation: employee.situation,
-        position: employee.position
-      }
-    })
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .sort((a, b) =>
-      a.workMinutes.full.hoursOfDay[0].localeCompare(
-        b.workMinutes.full.hoursOfDay[0]
-      )
-    )
-    .sort((a, b) => a.position.localeCompare(b.position))
+    return {
+      id: employee.id,
+      name: employee.name,
+      workMinutes: { low, full, sunday },
+      situation: employee.situation,
+      position: employee.position
+    }
+  })
+
+  let key: TWorkScheduleKey = 'low'
+
+  if (!filters.low && filters.full) key = 'full'
+  if (!filters.low && filters.sunday) key = 'sunday'
+
+  console.log(key)
 
   if (filters) {
-    return getFilteredEmployees(data, filters)
+    return sortEmployees(getFilteredEmployees(data, filters), key)
   }
 
-  return data
+  return sortEmployees(data, key)
+}
+
+export const getEmployeeSituations = async () => {
+  const employees = (await readFile(
+    'data/employees.json'
+  )) as TEmployeeScheduleData[]
+
+  const situations = Array.from(
+    new Set(employees.map((employee) => employee.situation))
+  ).sort((a, b) => a.localeCompare(b))
+
+  return situations
+}
+
+export const getEmployeePositions = async () => {
+  const employees = (await readFile(
+    'data/employees.json'
+  )) as TEmployeeScheduleData[]
+
+  const positions = Array.from(
+    new Set(employees.map((employee) => employee.position))
+  ).sort((a, b) => a.localeCompare(b))
+
+  return positions
+}
+
+export const getStartOfWork = async () => {
+  const employees = (await readFile(
+    'data/employees.json'
+  )) as TEmployeeScheduleData[]
+
+  const startOfWork = Array.from(
+    new Set(
+      employees.flatMap((employee) => [
+        formatToHoursAndMinutes(employee.workMinutes.full.minutes[0]),
+        formatToHoursAndMinutes(employee.workMinutes.low.minutes[0]),
+        formatToHoursAndMinutes(employee.workMinutes.sunday.minutes[0])
+      ])
+    )
+  ).sort(
+    (a, b) =>
+      formatHoursAndMinutesToMinutes(a) - formatHoursAndMinutesToMinutes(b)
+  )
+
+  return startOfWork
+}
+
+export const getEndOfWork = async () => {
+  const employees = (await readFile(
+    'data/employees.json'
+  )) as TEmployeeScheduleData[]
+
+  const endOfWork = Array.from(
+    new Set(
+      employees.flatMap((employee) => [
+        formatToHoursAndMinutes(
+          employee.workMinutes.full.minutes[
+            employee.workMinutes.full.minutes.length - 1
+          ]
+        ),
+        formatToHoursAndMinutes(
+          employee.workMinutes.low.minutes[
+            employee.workMinutes.low.minutes.length - 1
+          ]
+        ),
+        formatToHoursAndMinutes(
+          employee.workMinutes.sunday.minutes[
+            employee.workMinutes.sunday.minutes.length - 1
+          ]
+        )
+      ])
+    )
+  ).sort(
+    (a, b) =>
+      formatHoursAndMinutesToMinutes(a) - formatHoursAndMinutesToMinutes(b)
+  )
+
+  return endOfWork
 }

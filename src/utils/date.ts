@@ -59,3 +59,8 @@ export const formatToMinutesAndSeconds = (minutes: number) => {
 
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
+
+export const formatHoursAndMinutesToMinutes = (hoursAndMinutes: string) => {
+  const [hours, minutes] = hoursAndMinutes.split(':')
+  return parseInt(hours) * 60 + parseInt(minutes)
+}

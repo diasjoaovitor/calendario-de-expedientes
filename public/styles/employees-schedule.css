@@ -30,3 +30,37 @@
 .legend li:last-child {
   margin-bottom: 0;
 }
+
+.search {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.search form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.search p {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.search input,
+select {
+  flex: 1;
+}
+
+.search button {
+  width: 100%;
+}
+
+.checkboxes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
