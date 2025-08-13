@@ -1,0 +1,32 @@
+.legend {
+  border: 1px solid #000;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.legend > ul {
+  margin-top: 16px;
+}
+
+.legend > ul ul {
+  margin-left: 26px;
+  margin-top: 4px;
+
+  li {
+    margin-bottom: 4px;
+  }
+}
+
+.legend strong {
+  margin-right: 8px;
+}
+
+.legend li {
+  margin-bottom: 8px;
+}
+
+.legend li:last-child {
+  margin-bottom: 0;
+}

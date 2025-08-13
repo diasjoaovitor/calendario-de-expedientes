@@ -1,12 +1,12 @@
 import {
-  formatTime,
+  formatToHoursAndMinutes,
   getDayOfWeek,
   getNumberOfDaysInTheMonth,
   getNumberOfSundaysInTheMonth,
   getNumberOfWeeksInTheMonth,
   months,
   sum
-} from './utils'
+} from '@/utils'
 
 const getMinutesPerDayInTheMonth = (year: number, month: number) => {
   const days = new Array(getNumberOfDaysInTheMonth(year, month))
@@ -56,9 +56,9 @@ export const getYearCalendar = (year: number) => {
 
     data.push({
       name: month,
-      hours: formatTime(workedMinutes),
-      normalHours: formatTime(normalMinutes),
-      overtimeHours: formatTime(overtimeMinutes),
+      hours: formatToHoursAndMinutes(workedMinutes),
+      normalHours: formatToHoursAndMinutes(normalMinutes),
+      overtimeHours: formatToHoursAndMinutes(overtimeMinutes),
       weeks: []
     })
 
@@ -86,12 +86,13 @@ export const getYearCalendar = (year: number) => {
 
           data[monthIndex].weeks[weekIndex].days.push({
             date,
-            hours: formatTime(minutesOfDay)
+            hours: formatToHoursAndMinutes(minutesOfDay)
           })
           date++
         }
 
-        data[monthIndex].weeks[weekIndex].hours = formatTime(minutesInTheWeek)
+        data[monthIndex].weeks[weekIndex].hours =
+          formatToHoursAndMinutes(minutesInTheWeek)
       }
     }
   })

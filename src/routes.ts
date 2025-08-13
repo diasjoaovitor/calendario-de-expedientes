@@ -1,9 +1,11 @@
 import { Router } from 'express'
 
-import { index } from '@/controller'
+import { calendar, employeesSchedule, index } from './controllers'
 
 const router = Router()
 
 router.get('/', index)
+router.get('/calendar', calendar)
+router.get('/employees-schedule', employeesSchedule)
 
 export default router

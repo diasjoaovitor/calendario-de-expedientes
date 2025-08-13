@@ -1,0 +1,46 @@
+extends ./components/layout.pug
+
+block content
+  - const columns = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'Total']
+
+  link(rel="stylesheet", href="/styles/calendar.css")
+
+  h1 Calendário de Expedientes de #{year}
+
+  main
+    each month in calendar
+      div
+        h2= month.name
+        table
+          thead
+            tr
+              each column in columns
+                th= column
+          tbody
+            each week in month.weeks
+              tr
+                each day in week.days
+                  if day
+                    td
+                      div(class="day")
+                        strong= day.date
+                        span= day.hours
+                  else
+                    td= '-'
+                td= week.hours
+          tfoot
+            tr
+              td(colspan=8)
+                div
+                  span Carga horária total:
+                  span= month.hours
+            tr
+              td(colspan=8)
+                div
+                  span Jornada padrão:
+                  span= month.normalHours
+            tr
+              td(colspan=8)
+                div
+                  span Excedente de horas:
+                  span= month.overtimeHours

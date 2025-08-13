@@ -1,0 +1,82 @@
+extends ./components/layout.pug
+
+block content
+  - const columns = ['Nº', 'Nome', 'TJ', 'IE', 'IA', 'FA', 'FE', 'TA', 'TE']
+
+  link(rel="stylesheet", href="/styles/employees-schedule.css")
+
+  h1 Agenda de Funcionários
+
+  div(class="legend")
+    p
+    strong Legenda:
+
+    ul
+      li
+        strong TJ:
+        span Tipo de Jornada
+        ul
+          li
+            strong JP:
+            span Jornada Padrão
+          li
+            strong HE:
+            span Com horas extras
+          li
+            strong JS:
+            span Jornada do sábado
+      li
+        strong IE:
+        span Início do Expediente
+      li
+        strong IA:
+        span Início do Almoço
+      li
+        strong FA:
+        span Fim do Almoço
+      li
+        strong FE:
+        span Fim do Expediente
+      li
+        strong TA:
+        span Total de Horas de Almoço
+      li
+        strong TD:
+        span Total de Horas de Expediente
+
+  main
+    table
+      thead
+        tr
+          each column in columns
+            th= column
+      tbody
+        each employee, index in schedule
+          tr
+            td(rowspan=3)= index + 1
+            td(rowspan=3)= employee.name
+            td JP
+            td= employee.workMinutes.low.hoursOfDay[0]
+            td= employee.workMinutes.low.hoursOfDay[1]
+            td= employee.workMinutes.low.hoursOfDay[2]
+            td= employee.workMinutes.low.hoursOfDay[3]
+            td= employee.workMinutes.low.totalHoursOfLunch
+            td= employee.workMinutes.low.totalHoursOfDay
+
+          tr
+            td HE
+            td= employee.workMinutes.full.hoursOfDay[0]
+            td= employee.workMinutes.full.hoursOfDay[1]
+            td= employee.workMinutes.full.hoursOfDay[2]
+            td= employee.workMinutes.full.hoursOfDay[3]
+            td= employee.workMinutes.full.totalHoursOfLunch
+            td= employee.workMinutes.full.totalHoursOfDay
+
+          tr
+            td JS
+            td= employee.workMinutes.sunday.hoursOfDay[0]
+            td= employee.workMinutes.sunday.hoursOfDay[1]
+            td= employee.workMinutes.sunday.hoursOfDay[2]
+            td= employee.workMinutes.sunday.hoursOfDay[3]
+            td= employee.workMinutes.sunday.totalHoursOfLunch
+            td= employee.workMinutes.sunday.totalHoursOfDay

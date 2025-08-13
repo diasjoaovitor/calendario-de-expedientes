@@ -4,10 +4,6 @@ import dayjs from 'dayjs'
 
 dayjs.locale('pt-br')
 
-export const sum = (array: number[]) => {
-  return array.reduce((acc, curr) => acc + curr, 0)
-}
-
 export const months = new Array(12).fill(0).map((_, index) => {
   const month = dayjs().month(index).format('MMMM')
   const capitalized = month.charAt(0).toUpperCase() + month.slice(1)
@@ -46,9 +42,20 @@ export const getNumberOfSundaysInTheMonth = (year: number, month: number) => {
   return numberOfSundays
 }
 
-export const formatTime = (minutes: number) => {
+export const formatToHoursAndMinutes = (minutes: number) => {
+  if (!minutes) return '00:00'
+
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
 
   return `${hours}:${remainingMinutes.toString().padStart(2, '0')}`
+}
+
+export const formatToMinutesAndSeconds = (minutes: number) => {
+  if (!minutes) return '00:00'
+
+  const seconds = minutes * 60
+  const remainingSeconds = seconds % 60
+
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
