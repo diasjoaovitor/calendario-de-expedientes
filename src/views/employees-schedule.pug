@@ -2,7 +2,7 @@ extends ./components/layout.pug
 
 block content
   - const columns = ['Nº', 'Nome', 'TJ', 'IE', 'IA', 'FA', 'FE', 'TA', 'TE', 'FC']
-  - const selectedPosition = position  || ''
+  - const selectedPosition = position || ''
   - const selectedSituation = situation || ''
   - const selectedStartOfWork = startOfWork || ''
   - const selectedEndOfWork = endOfWork || ''
@@ -42,7 +42,6 @@ block content
         strong FE:
         span Fim do Expediente
       li
-
         strong TA:
         span Total de Horas de Almoço
       li
@@ -83,10 +82,14 @@ block content
           each time in endOfWorkOptions
             option(value=time, selected=time === selectedEndOfWork)= time
 
-      div.checkboxes
+      .checkboxes
         p
           label(for='low') JP
-          input#low(type='checkbox', name='low', checked=low || low === undefined && !full && !sunday)
+          input#low(
+            type='checkbox',
+            name='low',
+            checked=low || (low === undefined && !full && !sunday)
+          )
         p
           label(for='full') JE
           input#full(type='checkbox', name='full', checked=full)
@@ -95,10 +98,17 @@ block content
           input#sunday(type='checkbox', name='sunday', checked=sunday)
         p
           label(for='showInactive') Mostrar Inativos
-          input#showInactive(type='checkbox', name='showInactive', checked=showInactive || situation === "AFASTADO")
+          input#showInactive(
+            type='checkbox',
+            name='showInactive',
+            checked=showInactive || situation === 'AFASTADO'
+          )
       p
         button(type='submit') Buscar
-        button(type='reset', onclick='window.location.href="/employees-schedule"') Limpar
+        button(
+          type='reset',
+          onclick='window.location.href="/employees-schedule"'
+        ) Limpar
 
   main
     table
@@ -137,4 +147,3 @@ block content
             td= employee.workMinutes.sunday.hoursOfDay[3]
             td= employee.workMinutes.sunday.totalHoursOfLunch
             td= employee.workMinutes.sunday.totalHoursOfDay
-

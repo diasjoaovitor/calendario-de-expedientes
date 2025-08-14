@@ -10,6 +10,10 @@ export const months = new Array(12).fill(0).map((_, index) => {
   return capitalized
 })
 
+export const getCurrentYear = () => {
+  return dayjs().year()
+}
+
 export const getDayOfWeek = (year: number, month: number, date: number) => {
   return dayjs().year(year).month(month).date(date).day()
 }

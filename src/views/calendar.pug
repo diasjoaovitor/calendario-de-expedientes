@@ -5,7 +5,12 @@ block content
 
   link(rel='stylesheet', href='/styles/calendar.css')
 
-  h1 Calendário de Expedientes de #{ year }
+  h1 Calendário de Expedientes
+
+  form
+    label(for='year') Ano
+    input#year(type='number', name='year', value=year)
+    button(type='submit') Gerar Calendário
 
   main
     each month in calendar

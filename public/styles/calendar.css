@@ -1,3 +1,22 @@
+form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  max-width: 120px;
+  margin: 0 auto 32px;
+}
+
+form input {
+  width: 100%;
+  text-align: center;
+  margin-top: 4px;
+}
+
+form button {
+  width: 100%;
+  margin-top: 8px;
+}
+
 .day {
   display: flex;
   flex-direction: column;
