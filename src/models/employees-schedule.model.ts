@@ -207,8 +207,6 @@ export const getEmployeesSchedule = async (filters: TScheduleFilters) => {
   if (!filters.low && filters.full) key = 'full'
   if (!filters.low && filters.sunday) key = 'sunday'
 
-  console.log(key)
-
   if (filters) {
     return sortEmployees(getFilteredEmployees(data, filters), key)
   }
