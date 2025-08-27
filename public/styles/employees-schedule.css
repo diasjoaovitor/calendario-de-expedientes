@@ -32,7 +32,7 @@
 }
 
 .search {
-  margin-bottom: 32px;
+  margin: 32px 0;
   display: flex;
   justify-content: center;
 }
@@ -63,4 +63,12 @@ select {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.lunchOverTime {
+  background-color: yellow;
+}
+
+.workOverTime {
+  background-color: red;
 }

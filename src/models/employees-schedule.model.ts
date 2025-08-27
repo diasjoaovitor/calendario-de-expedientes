@@ -40,6 +40,8 @@ type TFullWorkSchedule = {
   totalHoursOfDay: string
   totalHoursOfLunch: string
   totalMinutesOfBreak: string
+  isLunchOverTime: boolean
+  isWorkOverTime: boolean
 }
 
 type TEmployeeSchedule = {
@@ -53,6 +55,10 @@ type TEmployeeSchedule = {
   situation: TSituation
   position: string
 }
+
+const getIsLunchOverTime = (minutesOfLunch: number) => minutesOfLunch > 120
+
+const getIsWorkOverTime = (minutesOfWork: number) => minutesOfWork > 480
 
 const sortEmployees = (employees: TEmployeeSchedule[], key: TWorkScheduleKey) =>
   employees
@@ -91,11 +97,13 @@ const getWorkMinutes = (workSchedule: TWorkSchedule): TFullWorkSchedule => {
     formatToHoursAndMinutes(minute)
   )
 
-  const totalHoursOfDay = formatToHoursAndMinutes(
+  const totalMinutesOfWork =
     minutes.length > 2
       ? minutes[3] - minutes[2] + minutes[1] - minutes[0]
       : minutes[1] - minutes[0]
-  )
+  const isWorkOverTime = getIsWorkOverTime(totalMinutesOfWork)
+
+  const totalHoursOfDay = formatToHoursAndMinutes(totalMinutesOfWork)
 
   const hasBreakForLunch = minutes.length > 2
   const totalHoursOfLunch = formatToHoursAndMinutes(
@@ -104,12 +112,17 @@ const getWorkMinutes = (workSchedule: TWorkSchedule): TFullWorkSchedule => {
 
   const totalMinutesOfBreak = formatToMinutesAndSeconds(sum(breakMinutes))
 
+  const isLunchOverTime =
+    hasBreakForLunch && getIsLunchOverTime(minutes[2] - minutes[1])
+
   return {
     hoursOfDay,
     hoursOfBreak,
     totalHoursOfDay,
     totalHoursOfLunch,
-    totalMinutesOfBreak
+    totalMinutesOfBreak,
+    isLunchOverTime,
+    isWorkOverTime
   }
 }
 

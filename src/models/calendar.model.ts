@@ -20,7 +20,7 @@ const getMinutesPerDayInTheMonth = (year: number, month: number) => {
 
       if (day === 6) return 8 * 60
 
-      if (date > 10 && date < 25) return 7 * 60 + 20
+      if (date > 8 && date < 28) return 7 * 60 + 20
 
       return 8 * 60
     })

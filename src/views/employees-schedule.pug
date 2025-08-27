@@ -52,6 +52,8 @@ block content
         strong FC:
         span Função
 
+  p As horas extras serão descontadas em folgas entre as datas 10 à 23 de cada mês.
+
   .search
     form(action='/employees-schedule', method='get')
       p
@@ -118,6 +120,12 @@ block content
             th= column
       tbody
         each employee, index in schedule
+          - const lowLunchOvertimeClass = employee.workMinutes.low.isLunchOverTime ? 'lunchOverTime' : ''
+          - const lowWorkOvertimeClass = employee.workMinutes.low.isWorkOverTime ? 'workOverTime' : ''
+          - const fullLunchOvertimeClass = employee.workMinutes.full.isLunchOverTime ? 'lunchOverTime' : ''
+          - const fullWorkOvertimeClass = employee.workMinutes.full.isWorkOverTime ? 'workOverTime' : ''
+          - const sundayLunchOvertimeClass = employee.workMinutes.sunday.isLunchOverTime ? 'lunchOverTime' : ''
+          - const sundayWorkOvertimeClass = employee.workMinutes.sunday.isWorkOverTime ? 'workOverTime' : ''
           tr
             td(rowspan=3)= index + 1
             td(rowspan=3)= employee.name
@@ -126,8 +134,8 @@ block content
             td= employee.workMinutes.low.hoursOfDay[1]
             td= employee.workMinutes.low.hoursOfDay[2]
             td= employee.workMinutes.low.hoursOfDay[3]
-            td= employee.workMinutes.low.totalHoursOfLunch
-            td= employee.workMinutes.low.totalHoursOfDay
+            td(class=lowLunchOvertimeClass)= employee.workMinutes.low.totalHoursOfLunch
+            td(class=lowWorkOvertimeClass)= employee.workMinutes.low.totalHoursOfDay
             td(rowspan=3, title=employee.position)= employee.position.split(' ').map((word, index) => { if (index === 0 && employee.position.split(' ').length > 1) return word.slice(0,2); if (index === employee.position.split(' ').length - 1) return word.slice(0, 4); return ''}).join(' ')
 
           tr
@@ -136,8 +144,8 @@ block content
             td= employee.workMinutes.full.hoursOfDay[1]
             td= employee.workMinutes.full.hoursOfDay[2]
             td= employee.workMinutes.full.hoursOfDay[3]
-            td= employee.workMinutes.full.totalHoursOfLunch
-            td= employee.workMinutes.full.totalHoursOfDay
+            td(class=fullLunchOvertimeClass)= employee.workMinutes.full.totalHoursOfLunch
+            td(class=fullWorkOvertimeClass)= employee.workMinutes.full.totalHoursOfDay
 
           tr
             td JS
@@ -145,5 +153,5 @@ block content
             td= employee.workMinutes.sunday.hoursOfDay[1]
             td= employee.workMinutes.sunday.hoursOfDay[2]
             td= employee.workMinutes.sunday.hoursOfDay[3]
-            td= employee.workMinutes.sunday.totalHoursOfLunch
-            td= employee.workMinutes.sunday.totalHoursOfDay
+            td(class=sundayLunchOvertimeClass)= employee.workMinutes.sunday.totalHoursOfLunch
+            td(class=sundayWorkOvertimeClass)= employee.workMinutes.sunday.totalHoursOfDay
