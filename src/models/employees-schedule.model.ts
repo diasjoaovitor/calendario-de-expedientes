@@ -1,3 +1,4 @@
+import { TEmployeeScheduleData, TSituation, TWorkSchedule } from '@/types'
 import {
   formatHoursAndMinutesToMinutes,
   formatToHoursAndMinutes,
@@ -7,32 +8,7 @@ import {
   sum
 } from '@/utils'
 
-export type TSituation =
-  | 'REGISTRADO'
-  | 'EXPERIÊNCIA'
-  | 'DESLIGADO'
-  | 'AFASTADO'
-  | 'FÉRIAS'
-  | 'FOLGA'
-
 export type TWorkScheduleKey = 'full' | 'low' | 'sunday'
-
-type TWorkSchedule = {
-  minutes: number[]
-  breakMinutes: number[]
-}
-
-type TEmployeeScheduleData = {
-  id: number
-  name: string
-  workMinutes: {
-    full: TWorkSchedule
-    low: TWorkSchedule
-    sunday: TWorkSchedule
-  }
-  situation: TSituation
-  position: string
-}
 
 type TFullWorkSchedule = {
   hoursOfDay: string[]
@@ -225,30 +201,6 @@ export const getEmployeesSchedule = async (filters: TScheduleFilters) => {
   }
 
   return sortEmployees(data, key)
-}
-
-export const getEmployeeSituations = async () => {
-  const employees = (await readFile(
-    'data/employees.json'
-  )) as TEmployeeScheduleData[]
-
-  const situations = Array.from(
-    new Set(employees.map((employee) => employee.situation))
-  ).sort((a, b) => a.localeCompare(b))
-
-  return situations
-}
-
-export const getEmployeePositions = async () => {
-  const employees = (await readFile(
-    'data/employees.json'
-  )) as TEmployeeScheduleData[]
-
-  const positions = Array.from(
-    new Set(employees.map((employee) => employee.position))
-  ).sort((a, b) => a.localeCompare(b))
-
-  return positions
 }
 
 export const getStartOfWork = async () => {

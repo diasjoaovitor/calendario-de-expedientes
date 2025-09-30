@@ -1,13 +1,12 @@
 import { Request, Response } from 'express'
 
 import {
-  getEmployeePositions,
-  getEmployeeSituations,
   getEmployeesSchedule,
-  getStartOfWork,
-  TSituation
+  getStartOfWork
 } from '@/models/employees-schedule.model'
 import { getEndOfWork } from '@/models/employees-schedule.model'
+import { TSituation } from '@/types'
+import { getEmployeePositions, getEmployeeSituations } from '@/utils'
 
 export const employeesSchedule = async (req: Request, res: Response) => {
   const {

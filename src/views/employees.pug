@@ -1,0 +1,58 @@
+extends ./components/layout.pug
+
+block content
+  - const columns = ['Nº', 'Nome', 'CPF', 'Situação', 'Função']
+  - const selectedPosition = position || ''
+  - const selectedSituation = situation || ''
+
+  link(rel='stylesheet', href='/styles/employees.css')
+
+  h1 Lista de Funcionários
+
+  .search
+    form(action='/employees', method='get')
+      p
+        label(for='name') Nome
+        input#name(type='text', name='name', value=name)
+      p
+        label(for='position') Cargo
+        select#position(name='position')
+          option(value='', selected=selectedPosition === '') Selecione
+          each position in positionOptions
+            option(value=position, selected=position === selectedPosition)= position
+      p
+        label(for='situation') Situação
+        select#situation(name='situation')
+          option(value='', selected=selectedSituation === '') Selecione
+          each situation in situationOptions
+            option(value=situation, selected=situation === selectedSituation)= situation
+
+      p
+        label(for='showInactive') Mostrar Inativos
+        input#showInactive(
+          type='checkbox',
+          name='showInactive',
+          checked=showInactive || situation === 'AFASTADO'
+        )
+
+      p
+        button(type='submit') Buscar
+        button(
+          type='reset',
+          onclick='window.location.href="/employees-schedule"'
+        ) Limpar
+
+  main
+    table
+      thead
+        tr
+          each column in columns
+            th= column
+      tbody
+        each employee, index in employees
+          tr
+            td= index + 1
+            td= employee.name
+            td= employee.cpf
+            td= employee.situation
+            td= employee.position
